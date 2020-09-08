@@ -3,9 +3,28 @@
 {% block content %}
 <div class="card">
   <img src="{{ url_for('static', filename='img/eppn-2020-logo.jpg') }}" class="logo" />
+  <img src="{{ url_for('static', filename='img/EMPHASIS_Logo.png') }}" class="logo" />
   <h1 class="site-title">{{ title }}</h1>
   <p class="subtitle">Welcome to OpenSILEX URI generator. <br>
     This tool is meant to generate different URIs for your data, according to the date, nature of the object and identity of the owner.</p>
+
+  <br>
+  <p style="font-size: 18px;">
+    First time here ? Check the <a href="get_started">Get Started</a> page!
+  </p>
+  <br>
+  <p align="justify" style="width:800px">
+    It is recommended to perform several tests (Test user) before creating your own URIs. 
+    Then you can generate URIs for your data in the <a href="import_dataset">Generate URI</a> section
+  <br> <br>
+  <b>If you already have identifiers...</b>
+  <br>
+  If you already have identifiers that fulfill the requirements of your own system. <br>
+  You can create URIs that keep these identifiers with a prefix that contains the necessary informations so your current IDs are interoperable with other information system within EPPN2020, EMPHASIS or other infrastructures.
+  <br>
+  In this case go to : <a href="existing_ID">I already have an ID</a>
+</p>
+
   <a href="/dashapp/" class="dash-link">
     <span>Embdedded Plotly Dash</span>
     <i class="fas fa-arrow-right"></i>

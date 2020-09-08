@@ -1,22 +1,24 @@
-{% extends "generator.html" %}
+{% extends "layout.jinja2" %}
 {% block title %}
 get started
 {% endblock %}
 {% block content %}
-<div style="margin-left: 3%;">
-    <h2>Get started</h2>
+<div class="card">
+    <h2 style="text-align: center;">Get started</h2>
     <p style="width:800px">
         <i>How to use this application, how to test it with examples and how to use it for generating URIs in your own installation? </i>
         
         <br>
-        <h3>1. Initialize account</h3>
+        <h3 style="text-align: center;">1. Initialize account</h3>
+       <p>
         If you just want to have a go, <a href="login"> log in</a> as TEST user :<br>
         username: test <br>
         password: test
         <br> <br>
         If you want to use the application, for your installation, go to : <a href="new_user">Create your account</a>. 
+       </p>
     </p>
-    <h3>2. Using the application for testing URI generation for different objects.</h3>
+    <h3 style="text-align: center;">2. Using the application for testing URI generation for different objects.</h3>
     <p style="width:800px"> 
         It is recommended to perform several tests before creating your own URIs<br>
         In this case (test) log in with test details (test/test).<br>
@@ -41,7 +43,7 @@ get started
     </p>
     <i>The returned file is by default in your "download" folder under the name "export_URI_plant.csv" (plant/sensors/...).</i>
 
-    <h3>3. Generate URI for your own installation.</h3>
+    <h3 style="text-align: center;">3. Generate URI for your own installation.</h3>
     <p align="justify" style="width:800px">
         You need to create files that describes objects in your installation, for each category of objects you are interested in. 
         They need to have the same format as in the corresponding object category in examples (§2 above).  <br>
@@ -70,7 +72,7 @@ get started
         Hence, a new URI will be created if you submit a file twice. You can use any of the URIs created for the considered object. <br>
         You can check what was the last value given to your uri in the list URI menu. 
         Some resources are not incremental (data, images, ...) and thus are using a random URI generated. 
-</p> 
+    </p> 
     
 </div>
 {% endblock %}
