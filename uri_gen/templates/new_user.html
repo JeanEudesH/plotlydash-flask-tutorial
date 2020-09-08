@@ -1,0 +1,13 @@
+{% extends "generator.html" %}
+{% block title %}
+New user
+{% endblock %}
+{% block content %}
+<form class="installation", method="post">
+   <label for="username">Define your Username</label> <br>
+   <input type=text name="user"  placeholder="your institution"> <br>
+   <label>Set you password</label> <br>
+   <input type="password" name="password" placeholder="6Kty7/%M"> <br>
+   <button type = "submit" class="btn btn-primary">Create User</button>
+</form>
+{% endblock %}

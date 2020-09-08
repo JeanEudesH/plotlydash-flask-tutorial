@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+        <title class='main-title'>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="static/css/style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    </head>
+
+    <body>
+        <div class="container-fluid">
+          <div class="navbar dropdown" >
+            <a href="home" class="navbar-brand">URI generator</a> 
+            
+            {% if not statut %}
+            <a href="get_started" class="navbar-item">Get started</a> 
+            <a href="login" class="navbar-item">Log in</a>  
+            {% endif %}
+            {% if statut %}
+            <a href="get_started" class="navbar-item">Get started</a>
+            <a href="import_dataset" class="navbar-item">Generate new URI</a>
+            <a href="existing_ID" class="navbar-item">Enrich existing ID</a>  
+            <a href="your_database" class="navbar-item">last database URI</a> 
+            <a href="logout" class="navbar-item">Log out</a>              
+              <!-- <a href="login" class="navbar-item">Change User</a> -->
+            <a style="color: rgb(255, 170, 50); font-size: 24px; float:right"  ;>
+                {{username}}
+              </a>
+            {% endif %}
+            </div>
+            <div class="body-content" id=URI_generator>
+              {% block content %}
+              {% endblock %}
+              <hr/>
+            </div>
+              {% block success %}
+              {% endblock %}                       
+       </div>
+        <footer>
+          <p>© 2020 - INRAE, UMR Mistea - EPPN2020 - EMPHASIS</p>
+      </footer>
+      <script src="static/js/vue.js"></script>
+      <script src="static/js/appVue.js"></script>
+    </body>
+</html>

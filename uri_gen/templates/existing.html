@@ -1,0 +1,74 @@
+{% extends "generator.html" %}
+{% block title %}
+Import dataset
+{% endblock %}
+{% block content %}
+<h2>Enrich existing ID</h2>
+Provide a csv table of your data. Expected format is the <a href="data/example_plant.csv" download="example_plant">following </a>.
+{% if statut  %}
+  <p style="color:coral; width: 30%; font-size: 20px;">
+    Connected as {{username}}
+  </p>
+  {% endif %}
+  {% if not statut %}
+  <p style="color:coral; width: 30%; font-size: 20px;">
+    Not connected !
+  </p>
+  {% endif %}
+
+<form method="post" enctype="multipart/form-data">
+   <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Num%C3%A9ro_1.jpg" alt="n1" width="50" height="50"> 
+   <label for="file">Import your file</label> <br>
+   
+   {% with messages = get_flashed_messages() %}
+      {% if messages %}
+         <ul class=flashes>
+         {% for message in messages %}
+           <b style="color: red;"   >{{ message }}</b>
+         {% endfor %}
+         </ul>
+      {% endif %}
+   {% endwith %}
+   
+   A file with objects you want to generate a URI for. <br>
+   <input type="file" name="file" id="file">
+   <p>Details: <i v-on:click="toggleDetails()" class="arrow down"></i></p> <br>
+   <div v-if="Details" style="background-color: ivory; margin-left: 50px;">
+      <label>Field separator</label> <br>      
+      <input type="checkbox" id="sep_comma" name="sep" value="," checked>
+      <label for="sep_comma">Comma (,)</label> 
+      <input type="checkbox" id="sep_semicolon" name="sep" value=";">
+      <label for="sep_semicolon">Semicolon (;)</label>
+      <input type="checkbox" id="sep_tab" name="sep" value="\t">
+      <label for="sep_tab">Tabulation (\t)</label> <br>
+      <br>
+      
+      <label for="skiprow">Number of rows to skip (no data, but comment in the first ___ rows)</label> <br>
+      <input type="text" id="skiprow" name="skiprow" value="0">   
+   </div>
+   <div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/96/Num%C3%A9ro_2.jpg" alt="n2" width="50" height="50"> 
+   <label for="hostname">Host Name</label> <br>
+   <input type=text name="hostname" value="{{username}}"> <br>
+   <label>Installation name</label> <br>
+   <input type=text name="installation" value="{{installation}}"> <br>
+   </div>
+   <br>
+   <div id="additional_data">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Num%C3%A9ro_3.jpg" alt="n3" width="50" height="50">
+      <label>Existing ID</label>
+
+      <div>
+         <label for="identifier">Identifier column</label> <br>
+         The column of your existing ID, it will not be replaced, just add another URI column. <br>
+         <input type=text name="identifier" label = "identifier" value="ID"> <br>    
+      </div>
+     
+   </div>
+   
+   <br>
+   <button type=submit class="btn btn-primary">
+      Generate URI
+   </button>
+</form> 
+{% endblock %}

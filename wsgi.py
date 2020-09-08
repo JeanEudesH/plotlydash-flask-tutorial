@@ -1,5 +1,5 @@
 """Application entry point."""
-from uri-gen import init_app
+from uri_gen import init_app
 
 app = init_app()
 

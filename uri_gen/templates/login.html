@@ -1,0 +1,28 @@
+{% extends "generator.html" %}
+{% block title %}
+Login
+{% endblock %}
+{% block content %}
+<form class="installation", method="post">
+   <label for="username">Username</label> <br>
+   <input type=text name="username" value="test"> <br>
+   <label for="password">Password</label> <br>
+   <input type="password" name="password" value="test"> <br>
+   <button type=submit class="btn btn-primary"> Login </button>
+</form>
+
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <b>{{ message }}</b>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+<p style="font-size: 18px;">Not registered yet ? Create your account <a href="{{url_for('create_user')}}">here</a></p>
+<p>A test user (test/test) is avaliable to test the app before performing real queries.</p>
+{% endblock %}
