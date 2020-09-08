@@ -166,10 +166,7 @@ nav a i{
 }
 .dash-spreadsheet-container th{
     padding:25px 12px!important;
-    border-top:0!important;
-    border-right:0!important;
-    border-bottom:1px solid #e5e7eb!important;
-    border-left:0!important;
+    border-bottom:2px solid #7c7c7c!important;
     background:white!important;
     color:#404552
 }
@@ -188,24 +185,17 @@ nav a i{
     transition:all .3s ease-out
 }
 .dash-spreadsheet-container th .sort:hover{
-    text-decoration:none;
     cursor:pointer;
     opacity:.7
 }
 .dash-spreadsheet-container th>div{
     display:flex;
     align-items:center;
-    width:fit-content
 }
 .dash-spreadsheet-container th>div span:last-of-type{
     font-size:.8em;
     font-weight:600;
     text-transform:uppercase
-}
-.dash-spreadsheet-container td{
-    padding:12px!important;
-    font-size:.95em;
-    text-align:left!important
 }
 .dash-spreadsheet-container td:first-of-type,.dash-spreadsheet-container td:last-of-type{
     max-width:50px!important
@@ -214,25 +204,8 @@ nav a i{
     display:block!important;
     max-width:500px;
     overflow:hidden!important;
-    font-size:1.2em;
-    font-weight:300;text-align:left;
     text-overflow:ellipsis;
-    white-space:nowrap;
     opacity:.8
-}
-.dash-spreadsheet-container td[data-dash-column="command"],.dash-spreadsheet-container .column-1{
-    max-width:200px!important
-}
-.dash-spreadsheet-container td[data-dash-column="index"]{
-    text-align:center!important
-}
-.dash-spreadsheet-container td[data-dash-column="index"] div{
-    text-align:center!important
-}
-.dash-spreadsheet-container td[data-dash-column="index"]{
-    color:#939da4;
-    font-size:1.1em;
-    font-weight:500
 }
 .dash-spreadsheet-container tr:nth-child(even){
     background:#f5f8fc!important
@@ -240,17 +213,10 @@ nav a i{
 table tbody{
     box-shadow:0 0 7px #bdbdd2!important
 }
-table tbody tr{
-    border:0!important
-}
-table tbody tr:nth-child(even){
-    background:#e7eefa!important
-}
 table tbody tr td{
     padding:12px 10px!important;
     overflow:hidden!important;
-    border:0!important;
-    font-size:.65em!important;
+    font-size:.9em!important;
     line-height:1.25!important;
     text-align:center!important
 }
@@ -358,11 +324,6 @@ background-color: #f2fff0;
     margin-left: 30px;
 }
 
-.content {
-margin: 0;
-width: 50%;
-}
-
 table, td, th {
 border: 1px solid #aaa;
 }
@@ -383,8 +344,4 @@ padding: 5px;
 
 .form {
 margin-top: 20px;
-}
-
-#content {
-width: 70%;
 }
