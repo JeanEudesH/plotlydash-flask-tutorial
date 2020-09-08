@@ -1,9 +1,6 @@
 """Initialize Flask app."""
 from flask import Flask
 from flask_assets import Environment
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-import hashlib
 
 def init_app():
     """Construct core Flask application with embedded Dash app."""
@@ -27,8 +24,3 @@ def init_app():
         compile_static_assets(assets)
 
         return app
-
-def init_db():
-    app = init_app()
-    db = SQLAlchemy(app)
-    return db
