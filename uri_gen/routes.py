@@ -7,9 +7,9 @@ from flask import current_app as app
 def home():
     """Landing page."""
     return render_template(
-        'index.jinja2',
-        title='Plotly Dash Flask Tutorial',
-        description='Embed Plotly Dash into your Flask applications.',
+        'home.html',
+        title='URI generator',
+        description='App to generate URI for your data.',
         template='home-template',
-        body="This is a homepage served with Flask."
+        body="Generate URI for scientific data from a csv file and recolt the csv back."
     )
