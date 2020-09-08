@@ -14,7 +14,7 @@ html_layout = '''
               <div class="nav-wrapper">
                 <a href="/">
                     <img src="/static/img/logo.png" class="logo" />
-                    <h1>Plotly Dash Flask Tutorial</h1>
+                    <h1>PHIS uri generator</h1>
                   </a>
                 <nav>
                 </nav>
