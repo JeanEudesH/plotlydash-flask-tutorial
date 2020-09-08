@@ -5,6 +5,9 @@ __pycache__
 .idea
 .webassets-cache
 
+#init db
+init_userdb.py
+
 # venv
 generator/
 .vscode
