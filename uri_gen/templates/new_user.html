@@ -1,9 +1,9 @@
-{% extends "generator.html" %}
+{% extends "layout.jinja2" %}
 {% block title %}
 New user
 {% endblock %}
 {% block content %}
-<form class="installation", method="post">
+<form method="post">
    <label for="username">Define your Username</label> <br>
    <input type=text name="user"  placeholder="your institution"> <br>
    <label>Set you password</label> <br>
