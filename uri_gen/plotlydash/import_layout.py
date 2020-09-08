@@ -1,0 +1,116 @@
+"""Plotly Dash HTML layout override."""
+
+html_layout = '''
+{% extends "layout.jinja2" %}
+{% block title %}
+Import dataset
+{% endblock %}
+{% block content %}
+<div class='card'> 
+
+<h2>Generate new URI</h2>
+Provide a csv table of your data. Expected format is the <a href="data/example_plant.csv" download="example_plant">following </a>.
+{% if statut  %}
+  <p style="color:coral; width: 30%; font-size: 20px;">
+    Connected as {{username}}
+  </p>
+  {% endif %}
+  {% if not statut %}
+  <p style="color:coral; width: 30%; font-size: 20px;">
+    Not connected !
+  </p>
+  {% endif %}
+
+<form method="post" enctype="multipart/form-data" action="import_dataset">
+   <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Num%C3%A9ro_1.jpg" alt="n1" width="50" height="50"> 
+   <label for="file">Import your file</label> <br>
+
+   {% with messages = get_flashed_messages() %}
+      {% if messages %}
+         <ul class=flashes>
+         {% for message in messages %}
+            <b style="color: red;"   >{{ message }}</b>
+         {% endfor %}
+         </ul>
+      {% endif %}
+   {% endwith %}
+
+   A file with one row for each resource you want to generate a URI for. <br>
+   <input type="file" name="file" id="file" accept="text/csv">
+   <p v-on:click="toggleDetails()"> Details: <i class="arrow down"></i></p> <br>
+   <div v-if="Details" style="background-color: ivory; margin-left: 50px;">
+      <label>Field separator</label> <br>      
+      <input type="checkbox" id="sep_comma" name="sep" value="," checked>
+      <label for="sep_comma">Comma (,)</label> 
+      <input type="checkbox" id="sep_semicolon" name="sep" value=";">
+      <label for="sep_semicolon">Semicolon (;)</label>
+      <input type="checkbox" id="sep_tab" name="sep" value="\t">
+      <label for="sep_tab">Tabulation (\t)</label> <br>
+      <br>
+      
+      <label for="skiprow">Number of rows to skip (no data, but comment in the first ___ rows)</label> <br>
+      <input type="text" id="skiprow" name="skiprow" value="0">   
+   </div>
+   <div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/96/Num%C3%A9ro_2.jpg" alt="n2" width="50" height="50"> 
+   <label for="hostname">Host Name</label> <br>
+   <input type=text name="hostname" value="{{username}}"> <br>
+   <label>Installation name</label> <br>
+   <input type=text name="installation" value="{{installation}}"> <br>
+
+   <label for="Resource Type">Object Type</label> <br>
+   <select name="resource_type" id="resource_type" v-model="resource_type">
+      <option value="actuator">actuator</option>
+      <!-- <option value="agent">agent</option> -->
+      <option value="annotation">annotation</option>
+      <option value="data">data</option>
+      <!-- <option value="document">document</option> -->
+      <option value="ear">ear</option>
+      <option value="event">event</option>
+      <option value="image">image</option>
+      <option value="leaf">leaf</option>
+      <option value="plant">plant</option>
+      <option value="plot">plot</option>
+      <option value="pot">pot</option>
+      <option value="sensor">sensor</option>
+      <option value="species">species</option>
+      <option value="vector">vector</option>
+   </select> <br>
+   </div>
+   
+   <div id="additional_data">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/Num%C3%A9ro_3.jpg" alt="n3" width="50" height="50">
+      <label>Data to put in the URI</label>
+      <div v-if="supl_data.project.includes(resource_type)">
+         <label for="project">Project related</label> <br>
+         <input type=text name="project"  value="aProject"> <br>
+
+      </div>
+      <div v-if="supl_data.year.includes(resource_type)">
+         <label for="year">Year</label> <br>
+         <input type=text name="year" label = "Year" value="2020"> <br>
+      <!-- alternative : lire le csv et récupérer la donnée dans le csv -->
+      </div>
+
+      <div v-if="supl_data.relative_plant.includes(resource_type)">
+         <label for="relPlant">Relative plant column</label> <br>
+         <input type=text name="relplant" label = "relPlant" value="Related_plant"> <br>    
+      </div>
+      <div v-if="resource_type === 'species'">
+         <!-- <p>alternative : lire le csv et récupérer la donnée dans le csv du nom exact de variable</p> -->
+         <label for="species">Species column</label> <br>
+         <input type=text name="species" label = "species" value="Species"> <br>   
+      </div>
+     
+   </div>
+   
+   <br>
+   <button type=submit class="btn btn-primary" id="upload_csv">
+      Generate URI
+   </button>
+<br>
+   <i>You can find the file in your Download folder (default settings)</i>
+</form> 
+</div>
+{% endblock %}
+'''
