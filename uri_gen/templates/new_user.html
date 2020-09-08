@@ -3,11 +3,13 @@
 New user
 {% endblock %}
 {% block content %}
-<form method="post">
-   <label for="username">Define your Username</label> <br>
-   <input type=text name="user"  placeholder="your institution"> <br>
-   <label>Set you password</label> <br>
-   <input type="password" name="password" placeholder="6Kty7/%M"> <br>
-   <button type = "submit" class="btn btn-primary">Create User</button>
-</form>
+<div class="card">
+   <form method="post">
+      <label for="username">Define your Username</label> <br>
+      <input type=text name="user"  placeholder="your institution"> <br>
+      <label>Set you password</label> <br>
+      <input type="password" name="password" placeholder="6Kty7/%M"> <br>
+      <button type = "submit" class="btn btn-primary">Create User</button>
+   </form>
+</div>
 {% endblock %}

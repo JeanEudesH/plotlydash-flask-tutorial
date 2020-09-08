@@ -3,6 +3,8 @@
 Import dataset
 {% endblock %}
 {% block content %}
+<div class='card'> 
+
 <h2>Generate new URI</h2>
 Provide a csv table of your data. Expected format is the <a href="data/example_plant.csv" download="example_plant">following </a>.
 {% if statut  %}
@@ -32,7 +34,7 @@ Provide a csv table of your data. Expected format is the <a href="data/example_p
 
    A file with one row for each resource you want to generate a URI for. <br>
    <input type="file" name="file" id="file" accept="text/csv">
-   <p>Details: <i v-on:click="toggleDetails()" class="arrow down"></i></p> <br>
+   <p v-on:click="toggleDetails()"> Details: <i class="arrow down"></i></p> <br>
    <div v-if="Details" style="background-color: ivory; margin-left: 50px;">
       <label>Field separator</label> <br>      
       <input type="checkbox" id="sep_comma" name="sep" value="," checked>
@@ -106,4 +108,5 @@ Provide a csv table of your data. Expected format is the <a href="data/example_p
 <br>
    <i>You can find the file in your Download folder (default settings)</i>
 </form> 
+</div>
 {% endblock %}

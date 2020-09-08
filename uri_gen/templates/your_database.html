@@ -1,24 +1,28 @@
-{% extends "generator.html" %}
+{% extends "layout.jinja2" %}
 {% block title %}
 your database
 {% endblock %}
 {% block content %}
-<h2>Summary of the last URIs created</h2>
-The data are stored in our server for this exercise.
-<p style=" color: coral; width: 15%;">
-    User : {{username}}
-  </p>
-<table class=content>
-    <tr>
-        <th>Type</th>
-        <th>Last URI granted</th>
-    </tr>
-    {% for collection in collections %}
-    <tr>
-        <td>{{collection.type}}</td>
-        <td>{{collection.lastvalue}}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+<div class="card">
+    <h2>Summary of the last URIs created</h2>
+    The data are stored in our server for this exercise.
+    <p style=" color: coral;">
+        User : {{username}}
+    </p>
+    <br>
+    <div class='dash-spreadsheet-container'>
+        <table class=content>
+            <tr>
+                <th>Type</th>
+                <th>Last URI granted</th>
+            </tr>
+            {% for collection in collections %}
+            <tr>
+                <td>{{collection.type}}</td>
+                <td>{{collection.lastvalue}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 {% endblock %}
