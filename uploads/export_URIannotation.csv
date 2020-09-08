@@ -1,0 +1,3 @@
+,Alias,Type,brand,serialNumber,inServiceDate,dateOfPurchase,personInCharge,URI
+0,Clim1,AirConditioning,ARIA,,2011-03-01,,,test/m3p/id/annotation/4b68ae4c560489056dccc915c9b77ceb1da1e9a3292a092f038bf5f8
+1,Clim2,AirConditioning,ARIA,,2011-03-01,,,test/m3p/id/annotation/1740ba41d67e3cb67d6e862d02e3b13aadbe1f7cae164b2f0a68b3d9

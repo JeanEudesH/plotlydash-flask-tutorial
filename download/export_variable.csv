@@ -1,0 +1,5 @@
+URI,Entity,Quality,Method,Unit,id
+opensilex.org/m3p/variable/air_temperature_°C,air,temperature,empty,°C,1
+opensilex.org/m3p/variable/plot_NDVI_imaging_index,plot,NDVI,imaging,index,2
+opensilex.org/m3p/variable/stem_mass_model_kg,stem,mass,model,kg,3
+ut-biomet.jp/todaï/variable/plot_yield_average_kg.ha-1,plot,yield,average,kg.ha-1,4
