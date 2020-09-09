@@ -103,14 +103,14 @@ Provide a csv table of your data. Expected format is the <a href="data/example_p
       </div>
      
    </div>
-   
+
    <br>
    <button type=submit class="btn btn-primary" id="upload_csv">
       Generate URI
    </button>
-<br>
-   <i>You can find the file in your Download folder (default settings)</i>
-</form> 
+    <br>
+        <i>You can find the file in your Download folder (default settings)</i>
+    </form> 
 </div>
 {% endblock %}
 '''
