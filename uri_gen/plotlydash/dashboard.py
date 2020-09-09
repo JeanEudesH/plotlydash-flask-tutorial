@@ -60,7 +60,7 @@ def init_callbacks(dash_app):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
 
 
-    def read_data(contents, filename, date):
+    def parse_contents(contents, filename, date):
         content_type, content_string = contents.split(',')
 
         decoded = base64.b64decode(content_string)
@@ -79,10 +79,6 @@ def init_callbacks(dash_app):
                 'There was an error processing this file.'
             ])
 
-        return df
-
-    def parse_contents(contents, filename, date):
-        df = read_data(contents, filename, date)
         return  html.Div([
                 html.H5(filename),
                 html.H6(datetime.datetime.fromtimestamp(date)),
@@ -166,8 +162,12 @@ def init_callbacks(dash_app):
             dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , year = additional_data['year'])
         
         dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI'+resource_type +'.csv'))
-        return  send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type  +'.csv'), mimetype="text/csv", as_attachment=True)
-
+        # return  send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type  +'.csv'), mimetype="text/csv", as_attachment=True)
+        return dash_table.DataTable(
+                    data=dataset_URI.to_dict('records'),
+                    columns=[{'name': i, 'id': i} for i in dataset_URI.columns],
+                    page_size=10
+                )
 
 def create_data_table(df):
     """Create Dash datatable from Pandas DataFrame."""
