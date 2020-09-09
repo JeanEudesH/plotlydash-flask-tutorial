@@ -60,7 +60,7 @@ def create_data_table(df):
         data=df.to_dict('records'),
         sort_action="native",
         sort_mode='native',
-        page_size=300
+        page_size=100
     )
     return table
 

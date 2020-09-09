@@ -19,7 +19,7 @@ def init_app():
         # Import Dash application
         from .plotlydash.dashboard import init_dashboard
         app = init_dashboard(app)
-
+        # callbacks = init_callbacks(app)
         # Compile static assets
         compile_static_assets(assets)
 
