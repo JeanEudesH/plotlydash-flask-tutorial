@@ -1,4 +1,7 @@
 """Instantiate a Dash app."""
+import base64
+import datetime
+import io
 import numpy as np
 import pandas as pd
 import dash
@@ -34,6 +37,7 @@ def init_dashboard(server):
             resource_type(),         
             additionnal_data(),
             # create_data_table(df),
+            download_uri(),
             html.Div(id='uri_output')
         ],
         id='dash-container'
@@ -185,3 +189,9 @@ def additionnal_data():
                     dcc.Input(id="species", type="text", value="Species")
                 ])
             ])
+
+def download_uri():
+    return html.Div(children=[
+        
+        html.Button('Generate URI', id='generate_URI', className="btn-primary-btn" )
+    ])
