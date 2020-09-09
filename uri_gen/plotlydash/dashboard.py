@@ -60,7 +60,7 @@ def init_callbacks(dash_app):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
 
 
-    def parse_contents(contents, filename, date):
+    def read_data(contents, filename, date):
         content_type, content_string = contents.split(',')
 
         decoded = base64.b64decode(content_string)
@@ -79,29 +79,33 @@ def init_callbacks(dash_app):
                 'There was an error processing this file.'
             ])
 
-        return html.Div([
-            html.H5(filename),
-            html.H6(datetime.datetime.fromtimestamp(date)),
+        return df
 
-            dash_table.DataTable(
-                data=df.to_dict('records'),
-                columns=[{'name': i, 'id': i} for i in df.columns],
-                page_size=10
-            ),
+    def parse_contents(contents, filename, date):
+        df = read_data(contents, filename, date)
+        return  html.Div([
+                html.H5(filename),
+                html.H6(datetime.datetime.fromtimestamp(date)),
 
-            html.Hr(),  # horizontal line
+                dash_table.DataTable(
+                    data=df.to_dict('records'),
+                    columns=[{'name': i, 'id': i} for i in df.columns],
+                    page_size=10
+                ),
 
-            # For debugging, display the raw contents provided by the web browser
-            html.Div('Raw Content'),
-            html.Pre(contents[0:200] + '...', style={
-                'whiteSpace': 'pre-wrap',
-                'wordBreak': 'break-all'
-            })
+                html.Hr(),  # horizontal line
+
+                # For debugging, display the raw contents provided by the web browser
+                html.Div('Raw Content'),
+                html.Pre(contents[0:200] + '...', style={
+                    'whiteSpace': 'pre-wrap',
+                    'wordBreak': 'break-all'
+                })
         ])
     @dash_app.callback(Output('uri_output', 'children'),
             [Input('upload-data', 'contents')],
             [State('upload-data', 'filename'),
-            State('upload-data', 'last_modified')])
+             State('upload-data', 'last_modified')])
 
     def update_output(list_of_contents, list_of_names, list_of_dates):
         if list_of_contents is not None:
@@ -118,9 +122,10 @@ def init_callbacks(dash_app):
     Input(component_id='resource_type', component_property='value'),
     Input(component_id='year', component_property='value'),
     Input('upload-data', 'contents')],
-    [State('upload-data', 'filename')]
+    [State('upload-data', 'filename'),
+     State('upload-data', 'last_modified')]
     )
-    def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename):
+    def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename, date):
         # if 'sep' in details:
         #     SepSetting=details['sep']
         # else:
@@ -130,7 +135,7 @@ def init_callbacks(dash_app):
         # else: 
         #     skipSetting=0
 
-        dataset = read_data(contents, filename)
+        dataset = read_data(contents, filename, date)
         # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
         # try:
         #   dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
