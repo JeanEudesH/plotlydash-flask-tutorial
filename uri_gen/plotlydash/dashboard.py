@@ -4,6 +4,7 @@ import datetime
 import io
 import numpy as np
 import pandas as pd
+import hashlib
 import dash
 import dash_table
 import dash_html_components as html
@@ -11,6 +12,7 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from .data import create_dataframe
 from .layout import html_layout
+from ..routes import User, user_collected_URI
 
 
 def init_dashboard(server):
@@ -34,11 +36,13 @@ def init_dashboard(server):
     dash_app.layout = html.Div(
         children=[
             input_file(),
+            details(),
             resource_type(),         
             additionnal_data(),
             # create_data_table(df),
             download_uri(),
-            html.Div(id='uri_output')
+            html.Div(id='uri_output'),
+            html.Div(id='la div')
         ],
         id='dash-container'
     )
@@ -50,7 +54,7 @@ def init_callbacks(dash_app):
     @dash_app.callback(
         Output(component_id='URI-path', component_property='children'),
         [Input(component_id='hostname', component_property='value'),
-        Input(component_id="installation", component_property="value")], method=['GET', 'POST']
+        Input(component_id="installation", component_property="value")]
     )
     def update_output_div(username, instalName):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
@@ -63,6 +67,7 @@ def init_callbacks(dash_app):
         try:
             if 'csv' in filename:
                 # Assume that the user uploaded a CSV file
+                # ici des arguments pour skiprow et sep
                 df = pd.read_csv(
                     io.StringIO(decoded.decode('utf-8')))
             elif 'xls' in filename:
@@ -80,7 +85,8 @@ def init_callbacks(dash_app):
 
             dash_table.DataTable(
                 data=df.to_dict('records'),
-                columns=[{'name': i, 'id': i} for i in df.columns]
+                columns=[{'name': i, 'id': i} for i in df.columns],
+                page_size=10
             ),
 
             html.Hr(),  # horizontal line
@@ -103,6 +109,60 @@ def init_callbacks(dash_app):
                 parse_contents(c, n, d) for c, n, d in
                 zip(list_of_contents, list_of_names, list_of_dates)]
             return children
+    # est-ce quon peut faire un calbback conditionnel ?
+    # if ... callback aaa ; else calbacck bbb
+    @dash_app.callback(Output('la div', 'children'),
+    [Input(component_id='hostname', component_property='value'),
+    Input(component_id='installation', component_property='value'),
+    Input(component_id='skiprows', component_property='value'),
+    Input(component_id='resource_type', component_property='value'),
+    Input(component_id='year', component_property='value'),
+    Input('upload-data', 'contents')],
+    [State('upload-data', 'filename')]
+    )
+    def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename):
+        # if 'sep' in details:
+        #     SepSetting=details['sep']
+        # else:
+        #     SepSetting=","
+        # if 'skiprow' in details:
+        #     skipSetting=int(details['skiprow'])
+        # else: 
+        #     skipSetting=0
+
+        dataset = read_data(contents, filename)
+        # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
+        # try:
+        #   dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
+        # except pd.errors.EmptyDataError:
+        #   flash("Invalid file, did you submit a csv file ?")
+        #   return render_template("import.html", username = session['username'], installation = session['installation'], statut = session['logged_in'])  
+        # dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
+
+        if resource_type in ['leaf', 'ear']:
+            try:
+                dataset.eval(additional_data['relplant'])
+            except pd.core.computation.ops.UndefinedVariableError:
+                flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
+
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , project = additional_data['project'], year = additional_data['year'], datasup = additional_data['relplant'])
+        
+        if resource_type == "species":
+            try:
+                dataset.eval(additional_data['species'])
+            except pd.core.computation.ops.UndefinedVariableError:
+                flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, datasup = additional_data['species'])  
+        
+        if resource_type in ['plant', 'pot', 'plot']:
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, project = additional_data['project'], year = additional_data['year'])
+        
+        if resource_type in ['sensor', 'vector', 'data', 'image', 'event', 'annotation','actuator']:
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , year = additional_data['year'])
+        
+        dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI'+resource_type +'.csv'))
+        return  send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type  +'.csv'), mimetype="text/csv", as_attachment=True)
+
 
 def create_data_table(df):
     """Create Dash datatable from Pandas DataFrame."""
@@ -148,8 +208,26 @@ def input_file():
                     'margin': '10px'
                 },
                 # Allow multiple files to be uploaded
-                multiple=False
+                multiple=True
             )
+    ])
+
+def details():
+    return html.Div(id="Details", children=[
+        html.P("Details"),
+        html.I(className="arrow down"),
+        html.Label("Field separator"), html.Br(),
+        dcc.Checklist(id="sep", 
+            value=[',', '\\t'],
+            labelStyle={'display': 'inline-block'},
+            options=[
+                { 'label': 'Comma (,)', 'value': ','}, 
+                { 'label': 'Semicolon (;)', 'value': ';'}, 
+                { 'label': 'Tabulation (\\t)', 'value': '\\t'}
+            ]),
+        html.Br(),
+        html.Label("Number of rows to skip (no data, but comments in the first __ rows)"),
+        dcc.Input(type="text", id="skiprows", value=0), html.Br()
     ])
 
 def resource_type():
@@ -192,6 +270,104 @@ def additionnal_data():
 
 def download_uri():
     return html.Div(children=[
-        
         html.Button('Generate URI', id='generate_URI', className="btn-primary-btn" )
     ])
+
+
+
+def URIgenerator_series(host, installation, resource_type, year="", lastvalue = "001", project="", datasup = {} ):
+    if host[-1] != "/":
+        host = host + "/" # Ensure host url ends with a slash
+    finalURI = host + installation + "/"
+
+    if resource_type == "agent":
+        finalURI = finalURI + "id/agent/" + datasup["agentName"]
+    
+    if resource_type == "annotation":
+        Hash = hashlib.sha224(str(random.random()).encode("utf-8")).hexdigest()
+        finalURI = finalURI + "id/annotation/"+ year + "/" + Hash
+
+    if resource_type == "actuator":
+        finalURI = finalURI + year + "/a" + year[2:]+ str(lastvalue).rjust(6, "0")
+    
+    if resource_type == "document":
+        Hash = hashlib.sha224(str(random.random()).encode("utf-8")).hexdigest()
+        finalURI = finalURI + "documents/document" + Hash
+
+    if resource_type == "data":
+        Hash = hashlib.sha224(str(random.random()).encode("utf-8")).hexdigest()
+        finalURI = finalURI + year + "/data/" + Hash
+    
+    if resource_type == "ear":
+        relPlant = datasup['relPlant']
+        finalURI = finalURI + year + "/" + project + "/" + relPlant + "/ea" + year[2:]+ str(lastvalue).rjust(6, "0") 
+
+    if resource_type == "event":
+        Hash = hashlib.sha224(str(random.random()).encode("utf-8")).hexdigest()
+        finalURI = finalURI + "id/event/" + year + "/" + Hash
+
+    if resource_type == "image":
+        Hash = hashlib.sha224(str(random.random()).encode("utf-8")).hexdigest()
+        finalURI = finalURI + year + "/image/" + Hash
+
+    if resource_type == "plant":
+        finalURI = finalURI + year + "/" + project + "/pl" + year[2:]+ str(lastvalue).rjust(6, "0")
+     
+    if resource_type == "plot":
+        finalURI = finalURI + year + "/" + project + "/pt" + year[2:]+ str(lastvalue).rjust(6, "0")
+    
+    if resource_type == "pot":
+        finalURI = finalURI + year + "/" + project + "/po" + year[2:]+ str(lastvalue).rjust(6, "0")
+
+    if resource_type == "leaf":
+        relPlant = datasup['relPlant']
+        finalURI = finalURI + year + "/" + project + "/" + relPlant + "/lf" + year[2:]+ str(lastvalue).rjust(6, "0")
+
+    if resource_type == "species":
+        finalURI = finalURI + datasup['species']
+
+    if resource_type == "sensor":
+        finalURI = finalURI + year + "/se" + year[2:] + str(lastvalue).rjust(6, "0")
+    
+    if resource_type == "vector":
+        finalURI = finalURI + year + "/ve" + year[2:] + str(lastvalue).rjust(6, "0")
+
+    if resource_type == "existing":
+        relPlant = datasup['identifier']
+        finalURI = finalURI + relPlant
+
+    return finalURI
+
+
+def add_URI_col(data, host = "", installation="", resource_type = "", project ="", year = "2017", datasup ="" ):
+    activeDB = user_collected_URI.query.filter_by(user = session['username'], type = resource_type).first()
+    datURI = []
+    if(resource_type in ['plant', 'plot', 'pot', 'sensor', 'vector', 'actuator']):
+        lastplant = int(activeDB.lastvalue)
+        for l in range(0,len(data)):
+            datURI.append(URIgenerator_series(host = host, installation = installation, year = year, resource_type = resource_type, project = project, lastvalue = str(lastplant)))
+            lastplant +=1
+        activeDB.lastvalue = str(lastplant)
+        db.session.commit()
+    if(resource_type in ['leaf', 'ear']):
+        lastplant = int(activeDB.lastvalue)
+        for l in range(0,len(data)):
+            datURI.append(URIgenerator_series(host = host, installation = installation, year = year, resource_type = resource_type, project = project, lastvalue = str(lastplant), datasup = {'relPlant':data.eval(datasup)[l]}))
+            lastplant +=1
+        activeDB.lastvalue = str(lastplant)
+        db.session.commit()
+
+    if(resource_type in ['data', 'image', 'event', 'annotation']): 
+        for l in range(0,len(data)):
+            datURI.append(URIgenerator_series(host = host, installation = installation, year = year, resource_type = resource_type))
+
+    if(resource_type =="species"): 
+        for l in range(0,len(data)):
+            datURI.append(URIgenerator_series(host = host, installation = installation, year = year, resource_type = resource_type, datasup = {'species':data.eval(datasup)[l]}))
+
+    if(resource_type =="existing"): 
+        for l in range(0,len(data)):
+            datURI.append(URIgenerator_series(host = host, installation = installation, resource_type = resource_type, datasup = {'identifier':data.eval(datasup)[l]}))
+
+    data = data.assign(URI = datURI)
+    return data
