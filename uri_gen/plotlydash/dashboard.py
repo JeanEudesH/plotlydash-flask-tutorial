@@ -59,50 +59,10 @@ def init_callbacks(dash_app):
     def update_output_div(username, instalName):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
 
-
-    def parse_contents(contents, filename, date):
-        content_type, content_string = contents.split(',')
-
-        decoded = base64.b64decode(content_string)
-        try:
-            if 'csv' in filename:
-                # Assume that the user uploaded a CSV file
-                # ici des arguments pour skiprow et sep
-                df = pd.read_csv(
-                    io.StringIO(decoded.decode('utf-8')))
-            elif 'xls' in filename:
-                # Assume that the user uploaded an excel file
-                df = pd.read_excel(io.BytesIO(decoded))
-        except Exception as e:
-            print(e)
-            return html.Div([
-                'There was an error processing this file.'
-            ])
-
-        return  html.Div([
-                html.H5(filename),
-                html.H6(datetime.datetime.fromtimestamp(date)),
-
-                dash_table.DataTable(
-                    data=df.to_dict('records'),
-                    columns=[{'name': i, 'id': i} for i in df.columns],
-                    page_size=10
-                ),
-
-                html.Hr(),  # horizontal line
-
-                # For debugging, display the raw contents provided by the web browser
-                html.Div('Raw Content'),
-                html.Pre(contents[0:200] + '...', style={
-                    'whiteSpace': 'pre-wrap',
-                    'wordBreak': 'break-all'
-                })
-        ])
     @dash_app.callback(Output('uri_output', 'children'),
             [Input('upload-data', 'contents')],
             [State('upload-data', 'filename'),
              State('upload-data', 'last_modified')])
-
     def update_output(list_of_contents, list_of_names, list_of_dates):
         if list_of_contents is not None:
             children = [
@@ -122,50 +82,6 @@ def init_callbacks(dash_app):
     # State('upload-data', 'contents'),
     # State('upload-data', 'filename')]
     # )
-    def update_URI(hostname, installation, details, resource_type, additional_data, list_of_contents, list_of_names):
-        if list_of_contents is not None:
-            children = [
-                parse_URI(c, n) for c, n in
-                zip(list_of_contents, list_of_names)]
-            return children
-    def parse_URI(hostname, installation, details, resource_type, additional_data, contents, filename):
-        content_type, content_string = contents.split(',')
-
-        decoded = base64.b64decode(content_string)
-        try:
-            if 'csv' in filename:
-                # Assume that the user uploaded a CSV file
-                # ici des arguments pour skiprow et sep
-                df = pd.read_csv(
-                    io.StringIO(decoded.decode('utf-8')))
-            elif 'xls' in filename:
-                # Assume that the user uploaded an excel file
-                df = pd.read_excel(io.BytesIO(decoded))
-        except Exception as e:
-            print(e)
-            return html.Div([
-                'There was an error processing this file.'
-            ])
-
-        return  html.Div([
-                html.H5(filename),
-
-                dash_table.DataTable(
-                    data=df.to_dict('records'),
-                    columns=[{'name': i, 'id': i} for i in df.columns],
-                    page_size=10
-                ),
-
-                html.Hr(),  # horizontal line
-
-                # For debugging, display the raw contents provided by the web browser
-                html.Div('Raw Content'),
-                html.Pre(contents[0:200] + '...', style={
-                    'whiteSpace': 'pre-wrap',
-                    'wordBreak': 'break-all'
-                })
-        ])
-
     def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename):
         # if 'sep' in details:
         #     SepSetting=details['sep']
@@ -213,6 +129,31 @@ def init_callbacks(dash_app):
                     columns=[{'name': i, 'id': i} for i in dataset_URI.columns],
                     page_size=10
                 )
+    
+    def read_data(list_of_contents, list_of_names):
+        return parse_URI(c, n) for c, n in
+              zip(list_of_contents, list_of_names)
+             
+    def parse_data(contents, filename):
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        try:
+            if 'csv' in filename:
+                # Assume that the user uploaded a CSV file
+                # ici des arguments pour skiprow et sep
+                df = pd.read_csv(
+                    io.StringIO(decoded.decode('utf-8')))
+            elif 'xls' in filename:
+                # Assume that the user uploaded an excel file
+                df = pd.read_excel(io.BytesIO(decoded))
+        except Exception as e:
+            print(e)
+            return html.Div([
+                'There was an error processing this file.'
+            ])
+        return  df
+
+    
 
 def create_data_table(df):
     """Create Dash datatable from Pandas DataFrame."""
@@ -323,7 +264,44 @@ def download_uri():
         html.Button('Generate URI', id='generate_URI', className="button btn-default" )
     ])
 
+def parse_contents(contents, filename, date):
+        content_type, content_string = contents.split(',')
 
+        decoded = base64.b64decode(content_string)
+        try:
+            if 'csv' in filename:
+                # Assume that the user uploaded a CSV file
+                # ici des arguments pour skiprow et sep
+                df = pd.read_csv(
+                    io.StringIO(decoded.decode('utf-8')))
+            elif 'xls' in filename:
+                # Assume that the user uploaded an excel file
+                df = pd.read_excel(io.BytesIO(decoded))
+        except Exception as e:
+            print(e)
+            return html.Div([
+                'There was an error processing this file.'
+            ])
+
+        return  html.Div([
+                html.H5(filename),
+                html.H6(datetime.datetime.fromtimestamp(date)),
+
+                dash_table.DataTable(
+                    data=df.to_dict('records'),
+                    columns=[{'name': i, 'id': i} for i in df.columns],
+                    page_size=10
+                ),
+
+                html.Hr(),  # horizontal line
+
+                # For debugging, display the raw contents provided by the web browser
+                html.Div('Raw Content'),
+                html.Pre(contents[0:200] + '...', style={
+                    'whiteSpace': 'pre-wrap',
+                    'wordBreak': 'break-all'
+                })
+        ])
 
 def URIgenerator_series(host, installation, resource_type, year="", lastvalue = "001", project="", datasup = {} ):
     if host[-1] != "/":
@@ -387,7 +365,6 @@ def URIgenerator_series(host, installation, resource_type, year="", lastvalue = 
         finalURI = finalURI + relPlant
 
     return finalURI
-
 
 def add_URI_col(data, host = "", installation="", resource_type = "", project ="", year = "2017", datasup ="" ):
     activeDB = user_collected_URI.query.filter_by(user = session['username'], type = resource_type).first()
