@@ -11,7 +11,7 @@ import dash_table
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-# from flask import session
+from flask import flash
 from .data import create_dataframe
 from .layout import html_layout
 from ..routes import User, user_collected_URI, session, db, dir_path
@@ -43,6 +43,7 @@ def init_dashboard(server):
                 # create_data_table(df),
                 download_uri(),
             # html.Div(id='table_output'),
+            html.A(href="uploads/exportURi.csv", download="export_URI", children=["Download"]),
             html.Div(id='uri_output')
         ],
         id='dash-container'
@@ -116,8 +117,8 @@ def init_callbacks(dash_app):
         if resource_type in ['sensor', 'vector', 'data', 'image', 'event', 'annotation','actuator']:
             dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , year = year)
         
-        dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI'+resource_type +'.csv'))
-        # return  send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type  +'.csv'), mimetype="text/csv", as_attachment=True)
+        dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI.csv'))
+        # send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type +'.csv'), mimetype="text/csv", as_attachment=True)
         return dash_table.DataTable(
                     data=dataset_URI.to_dict('records'),
                     columns=[{'name': i, 'id': i} for i in dataset_URI.columns],
