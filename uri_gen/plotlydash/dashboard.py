@@ -2,6 +2,7 @@
 import base64
 import datetime
 import io
+import os
 import numpy as np
 import pandas as pd
 import hashlib
@@ -14,7 +15,6 @@ from dash.dependencies import Input, Output, State
 from .data import create_dataframe
 from .layout import html_layout
 from ..routes import User, user_collected_URI, session, db
-
 
 def init_dashboard(server):
     """Create a Plotly Dash dashboard."""
@@ -97,7 +97,7 @@ def init_callbacks(dash_app):
         # else: 
         #     skipSetting=0
 
-        dataset = read_data(contents, filename)
+        dataset = parse_data(contents, filename)
         # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
         # try:
         #   dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
@@ -141,17 +141,11 @@ def init_callbacks(dash_app):
     #     ]
     #     return children
              
-    def read_data(list_of_contents, list_of_names):
-        children = [
-            parse_data(c, n) for c, n in
-            zip(list_of_contents, list_of_names)]
-        return children
-             
     def parse_data(contents, filename):
-        content_type, content_string = contents.split(',')
+        content_type, content_string = contents[0].split(',')
         decoded = base64.b64decode(content_string)
         try:
-            if 'csv' in filename:
+            if 'csv' in filename[0]:
                 # Assume that the user uploaded a CSV file
                 # ici des arguments pour skiprow et sep
                 df = pd.read_csv(
@@ -164,6 +158,7 @@ def init_callbacks(dash_app):
             return html.Div([
                 'There was an error processing this file.'
             ])
+        print(df)
         return  df
 
     
@@ -409,5 +404,5 @@ def add_URI_col(data, host = "", installation="", resource_type = "", project ="
         for l in range(0,len(data)):
             datURI.append(URIgenerator_series(host = host, installation = installation, resource_type = resource_type, datasup = {'identifier':data.eval(datasup)[l]}))
 
-    data = data[0].assign(URI = datURI)
+    data = data.assign(URI = datURI)
     return data
