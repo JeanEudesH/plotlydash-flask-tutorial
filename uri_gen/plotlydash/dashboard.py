@@ -97,7 +97,7 @@ def init_callbacks(dash_app):
 
         if resource_type in ['leaf', 'ear']:
             try:
-                dataset.eval(relplant)
+                dataset.eval(relPlant)
             except pd.core.computation.ops.UndefinedVariableError:
                 flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
 
@@ -391,6 +391,5 @@ def add_URI_col(data, host = "", installation="", resource_type = "", project ="
     if(resource_type =="existing"): 
         for l in range(0,len(data)):
             datURI.append(URIgenerator_series(host = host, installation = installation, resource_type = resource_type, datasup = {'identifier':data.eval(datasup)[l]}))
-
-    data = data.insert(1, 'URI' , datURI)
+    data.insert(loc=0, column='URI' , value=datURI)
     return data
