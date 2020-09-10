@@ -111,17 +111,62 @@ def init_callbacks(dash_app):
             return children
     # est-ce quon peut faire un calbback conditionnel ?
     # if ... callback aaa ; else calbacck bbb
-    @dash_app.callback(Output('la div', 'children'),
-    [Input(component_id='hostname', component_property='value'),
-    Input(component_id='installation', component_property='value'),
-    Input(component_id='skiprows', component_property='value'),
-    Input(component_id='resource_type', component_property='value'),
-    Input(component_id='year', component_property='value'),
-    Input('upload-data', 'contents')],
-    [State('upload-data', 'filename'),
-     State('upload-data', 'last_modified')]
-    )
-    def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename, date):
+    
+    # @dash_app.callback(Output('la div', 'children'),
+    # [Input('generate_uri', 'n_clicks')],
+    # [State(component_id='hostname', component_property='value'),
+    # State(component_id='installation', component_property='value'),
+    # State(component_id='skiprows', component_property='value'),
+    # State(component_id='resource_type', component_property='value'),
+    # State(component_id='year', component_property='value'),
+    # State('upload-data', 'contents'),
+    # State('upload-data', 'filename')]
+    # )
+    def update_URI(hostname, installation, details, resource_type, additional_data, list_of_contents, list_of_names):
+        if list_of_contents is not None:
+            children = [
+                parse_URI(c, n) for c, n in
+                zip(list_of_contents, list_of_names)]
+            return children
+    def parse_URI(hostname, installation, details, resource_type, additional_data, contents, filename):
+        content_type, content_string = contents.split(',')
+
+        decoded = base64.b64decode(content_string)
+        try:
+            if 'csv' in filename:
+                # Assume that the user uploaded a CSV file
+                # ici des arguments pour skiprow et sep
+                df = pd.read_csv(
+                    io.StringIO(decoded.decode('utf-8')))
+            elif 'xls' in filename:
+                # Assume that the user uploaded an excel file
+                df = pd.read_excel(io.BytesIO(decoded))
+        except Exception as e:
+            print(e)
+            return html.Div([
+                'There was an error processing this file.'
+            ])
+
+        return  html.Div([
+                html.H5(filename),
+
+                dash_table.DataTable(
+                    data=df.to_dict('records'),
+                    columns=[{'name': i, 'id': i} for i in df.columns],
+                    page_size=10
+                ),
+
+                html.Hr(),  # horizontal line
+
+                # For debugging, display the raw contents provided by the web browser
+                html.Div('Raw Content'),
+                html.Pre(contents[0:200] + '...', style={
+                    'whiteSpace': 'pre-wrap',
+                    'wordBreak': 'break-all'
+                })
+        ])
+
+    def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename):
         # if 'sep' in details:
         #     SepSetting=details['sep']
         # else:
@@ -131,7 +176,7 @@ def init_callbacks(dash_app):
         # else: 
         #     skipSetting=0
 
-        dataset = read_data(contents, filename, date)
+        dataset = read_data(contents, filename)
         # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
         # try:
         #   dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
@@ -192,7 +237,7 @@ def create_select():
 
 def input_file():
     return html.Div(className="input_file", children=[
-            html.Img(src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Num%C3%A9ro_1.jpg"),
+            html.Img(src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Num%C3%A9ro_1.jpg", className="steps"),
             html.Br(),
             html.Label("Import your file"),
             html.P("A file with one row for each resource you want to generate a URI for."),
@@ -237,7 +282,7 @@ def details():
 
 def resource_type():
     return html.Div(className="resource_type", children=[
-                html.Img(src="https://upload.wikimedia.org/wikipedia/commons/9/96/Num%C3%A9ro_2.jpg"),
+                html.Img(src="https://upload.wikimedia.org/wikipedia/commons/9/96/Num%C3%A9ro_2.jpg", className="steps"),
                 html.Br(),
                 html.Label("Host Name"), html.Br(),
                 dcc.Input(id="hostname", value="test", type="text"), html.Br(),
@@ -252,7 +297,7 @@ def resource_type():
 
 def additionnal_data():
     return  html.Div(className="additional_data", children=[
-                html.Img(src="https://upload.wikimedia.org/wikipedia/commons/5/52/Num%C3%A9ro_3.jpg"),
+                html.Img(src="https://upload.wikimedia.org/wikipedia/commons/5/52/Num%C3%A9ro_3.jpg", className="steps"),
                 html.Br(),
                 html.Label("Data to put in the URI"),
                 html.Div(children=[
@@ -275,7 +320,7 @@ def additionnal_data():
 
 def download_uri():
     return html.Div(children=[
-        html.Button('Generate URI', id='generate_URI', className="btn-primary-btn" )
+        html.Button('Generate URI', id='generate_URI', className="button btn-default" )
     ])
 
 

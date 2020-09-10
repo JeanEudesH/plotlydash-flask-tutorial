@@ -66,7 +66,7 @@ def init_dashboard(server):
     @dash_app.callback(
         Output(component_id='URI-path', component_property='children'),
         [Input(component_id='hostname', component_property='value'),
-        Input(component_id="installation", component_property="value")], method=['GET', 'POST']
+        Input(component_id="installation", component_property="value")]
     )
     def update_output_div(username, instalName):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
