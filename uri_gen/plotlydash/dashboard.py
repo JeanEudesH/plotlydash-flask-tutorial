@@ -42,7 +42,7 @@ def init_dashboard(server):
                 additionnal_data(),
                 # create_data_table(df),
                 download_uri(),
-            html.Div(id='table_output'),
+            # html.Div(id='table_output'),
             html.Div(id='uri_output')
         ],
         id='dash-container'
@@ -70,9 +70,7 @@ def init_callbacks(dash_app):
                 parse_contents(c, n, d) for c, n, d in
                 zip(list_of_contents, list_of_names, list_of_dates)]
             return children
-    # est-ce quon peut faire un calbback conditionnel ?
-    # if ... callback aaa ; else calbacck bbb
-    
+
     @dash_app.callback(Output('uri_output', 'children'),
     [Input(component_id='generate_URI', component_property='n_clicks')],
     [State(component_id='hostname', component_property='value'),
@@ -88,16 +86,6 @@ def init_callbacks(dash_app):
     State('upload-data', 'filename')]
     )
     def import_dataset(btn_activate, hostname, installation, sep, skiprows, species, year, project, relPlant, resource_type, contents, filename):
-        
-        # if 'sep' in details:
-        #     SepSetting=details['sep']
-        # else:
-        #     SepSetting=","
-        # if 'skiprow' in details:
-        #     skipSetting=int(details['skiprow'])
-        # else: 
-        #     skipSetting=0
-
         dataset = parse_data(contents, filename)
         # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
         # try:
@@ -159,7 +147,6 @@ def init_callbacks(dash_app):
             return html.Div([
                 'There was an error processing this file.'
             ])
-        print(df)
         return  df
 
     
@@ -405,5 +392,5 @@ def add_URI_col(data, host = "", installation="", resource_type = "", project ="
         for l in range(0,len(data)):
             datURI.append(URIgenerator_series(host = host, installation = installation, resource_type = resource_type, datasup = {'identifier':data.eval(datasup)[l]}))
 
-    data = data.assign(URI = datURI)
+    data = data.insert(1, 'URI' , datURI)
     return data
