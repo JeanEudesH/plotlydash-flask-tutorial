@@ -10,9 +10,10 @@ import dash_table
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
+# from flask import session
 from .data import create_dataframe
 from .layout import html_layout
-from ..routes import User, user_collected_URI
+from ..routes import User, user_collected_URI, session, db
 
 
 def init_dashboard(server):
@@ -35,14 +36,14 @@ def init_dashboard(server):
     # Create Layout
     dash_app.layout = html.Div(
         children=[
-            input_file(),
-            details(),
-            resource_type(),         
-            additionnal_data(),
-            # create_data_table(df),
-            download_uri(),
-            html.Div(id='uri_output'),
-            html.Div(id='la div')
+                input_file(),
+                details(),
+                resource_type(),         
+                additionnal_data(),
+                # create_data_table(df),
+                download_uri(),
+            html.Div(id='table_output'),
+            html.Div(id='uri_output')
         ],
         id='dash-container'
     )
@@ -59,7 +60,7 @@ def init_callbacks(dash_app):
     def update_output_div(username, instalName):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
 
-    @dash_app.callback(Output('uri_output', 'children'),
+    @dash_app.callback(Output('table_output', 'children'),
             [Input('upload-data', 'contents')],
             [State('upload-data', 'filename'),
              State('upload-data', 'last_modified')])
@@ -72,17 +73,21 @@ def init_callbacks(dash_app):
     # est-ce quon peut faire un calbback conditionnel ?
     # if ... callback aaa ; else calbacck bbb
     
-    # @dash_app.callback(Output('la div', 'children'),
-    # [Input('generate_uri', 'n_clicks')],
-    # [State(component_id='hostname', component_property='value'),
-    # State(component_id='installation', component_property='value'),
-    # State(component_id='skiprows', component_property='value'),
-    # State(component_id='resource_type', component_property='value'),
-    # State(component_id='year', component_property='value'),
-    # State('upload-data', 'contents'),
-    # State('upload-data', 'filename')]
-    # )
-    def import_dataset(hostname, installation, details, resource_type, additional_data, contents, filename):
+    @dash_app.callback(Output('uri_output', 'children'),
+    [Input(component_id='generate_URI', component_property='n_clicks')],
+    [State(component_id='hostname', component_property='value'),
+    State(component_id='installation', component_property='value'),
+    State(component_id='sep', component_property='value'),
+    State(component_id='skiprows', component_property='value'),
+    State(component_id='species', component_property='value'),
+    State(component_id='year', component_property='value'),
+    State(component_id='project', component_property='value'),
+    State(component_id='relPlant', component_property='value'),
+    State(component_id='resource_type', component_property='value'),
+    State('upload-data', 'contents'),
+    State('upload-data', 'filename')]
+    )
+    def import_dataset(btn_activate, hostname, installation, sep, skiprows, species, year, project, relPlant, resource_type, contents, filename):
         # if 'sep' in details:
         #     SepSetting=details['sep']
         # else:
@@ -103,24 +108,24 @@ def init_callbacks(dash_app):
 
         if resource_type in ['leaf', 'ear']:
             try:
-                dataset.eval(additional_data['relplant'])
+                dataset.eval(relplant)
             except pd.core.computation.ops.UndefinedVariableError:
                 flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
 
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , project = additional_data['project'], year = additional_data['year'], datasup = additional_data['relplant'])
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , project = project, year = year, datasup = relplant)
         
         if resource_type == "species":
             try:
-                dataset.eval(additional_data['species'])
+                dataset.eval(species)
             except pd.core.computation.ops.UndefinedVariableError:
                 flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, datasup = additional_data['species'])  
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, datasup = species)  
         
         if resource_type in ['plant', 'pot', 'plot']:
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, project = additional_data['project'], year = additional_data['year'])
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, project = project, year = year)
         
         if resource_type in ['sensor', 'vector', 'data', 'image', 'event', 'annotation','actuator']:
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , year = additional_data['year'])
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , year = year)
         
         dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI'+resource_type +'.csv'))
         # return  send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type  +'.csv'), mimetype="text/csv", as_attachment=True)
@@ -128,11 +133,19 @@ def init_callbacks(dash_app):
                     data=dataset_URI.to_dict('records'),
                     columns=[{'name': i, 'id': i} for i in dataset_URI.columns],
                     page_size=10
-                )
+        )
     
+    # def read_data(list_of_contents, list_of_names):
+    #     children = [
+    #         parse_data(list_of_contents, list_of_names)
+    #     ]
+    #     return children
+             
     def read_data(list_of_contents, list_of_names):
-        return parse_URI(c, n) for c, n in
-              zip(list_of_contents, list_of_names)
+        children = [
+            parse_data(c, n) for c, n in
+            zip(list_of_contents, list_of_names)]
+        return children
              
     def parse_data(contents, filename):
         content_type, content_string = contents.split(',')
@@ -243,25 +256,25 @@ def additionnal_data():
                 html.Label("Data to put in the URI"),
                 html.Div(children=[
                     html.Label("Year"), html.Br(),
-                    dcc.Input(id="year", type="text", value="2020")
+                    dcc.Input(id="year", name="year", type="text", value="2020", debounce=True)
                 ]),
                 html.Div(children=[
                     html.Label("Project related"), html.Br(),
-                    dcc.Input(id="project", type="text", value="aProject")
+                    dcc.Input(id="project", name="project", type="text", value="aProject", debounce=True)
                 ]),
                 html.Div(children=[
                     html.Label("Related plant column"), html.Br(),
-                    dcc.Input(id="relPlant", type="text", value="Related_plant")
+                    dcc.Input(id="relPlant", name="relPlant", type="text", value="Related_plant", debounce=True)
                 ]),
                 html.Div(children=[
                     html.Label("Species column"), html.Br(),
-                    dcc.Input(id="species", type="text", value="Species")
+                    dcc.Input(id="species", name="species", type="text", value="Species", debounce=True)
                 ])
             ])
 
 def download_uri():
     return html.Div(children=[
-        html.Button('Generate URI', id='generate_URI', className="button btn-default" )
+        html.Button('Generate URI', id='generate_URI', className="button btn-default", n_clicks=0 )
     ])
 
 def parse_contents(contents, filename, date):
@@ -396,5 +409,5 @@ def add_URI_col(data, host = "", installation="", resource_type = "", project ="
         for l in range(0,len(data)):
             datURI.append(URIgenerator_series(host = host, installation = installation, resource_type = resource_type, datasup = {'identifier':data.eval(datasup)[l]}))
 
-    data = data.assign(URI = datURI)
+    data = data[0].assign(URI = datURI)
     return data
