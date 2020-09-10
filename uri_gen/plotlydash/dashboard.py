@@ -14,7 +14,7 @@ from dash.dependencies import Input, Output, State
 # from flask import session
 from .data import create_dataframe
 from .layout import html_layout
-from ..routes import User, user_collected_URI, session, db
+from ..routes import User, user_collected_URI, session, db, dir_path
 
 def init_dashboard(server):
     """Create a Plotly Dash dashboard."""
@@ -88,6 +88,7 @@ def init_callbacks(dash_app):
     State('upload-data', 'filename')]
     )
     def import_dataset(btn_activate, hostname, installation, sep, skiprows, species, year, project, relPlant, resource_type, contents, filename):
+        
         # if 'sep' in details:
         #     SepSetting=details['sep']
         # else:

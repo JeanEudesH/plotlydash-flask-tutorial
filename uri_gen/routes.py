@@ -6,8 +6,11 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import random
+import os
 
 db = SQLAlchemy(app)
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class user_collected_URI(db.Model):
     id = db.Column(db.Integer, primary_key=True)
