@@ -115,7 +115,14 @@ header .nav-wrapper a{
 #dash-container{
     width:1200px;
     max-width:95%;
-    margin:50px auto 0
+    margin:50px auto 0;
+    background:white;
+    box-shadow:0 0 5px rgba(65,67,144,0.15);
+    padding:40px;
+}
+#dash-container label{
+
+    color:#59657b;
 }
 .container{
     margin:90px 30px;
@@ -197,9 +204,7 @@ nav a i{
     font-weight:600;
     text-transform:uppercase
 }
-.dash-spreadsheet-container td:first-of-type,.dash-spreadsheet-container td:last-of-type{
-    max-width:50px!important
-}
+
 .dash-spreadsheet-container td .dash-cell-value{
     display:block!important;
     max-width:500px;
@@ -238,16 +243,6 @@ table tbody tr td{
 .dash-spreadsheet-inner input::placeholder{
     color:grey
 }
-#histogram-graph{
-    margin-bottom:30px;padding-bottom:176px!important;
-    overflow:hidden;
-    border-radius:4px;
-    background:white;
-    box-shadow:0 0 4px #767a85
-}
-.main-svg{
-    overflow:visible!important
-}
 .arrow {
     border: solid black;
     border-width: 0 3px 3px 0;
@@ -263,9 +258,9 @@ ul, ol {
     margin-bottom: 10px;
 }
 .form-group{
-background-color: #FFFFFF;
-width:30%;
-height:50%;
+    background-color: #FFFFFF;
+    width:30%;
+    height:50%;
 }
 .button {
     display: inline-block;
@@ -342,6 +337,7 @@ text-align: center;
 padding: 5px;
 }
 
-.form {
-margin-top: 20px;
+.steps{
+    width:50px; 
+    height:50px
 }

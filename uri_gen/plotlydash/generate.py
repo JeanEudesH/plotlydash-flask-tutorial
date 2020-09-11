@@ -1,4 +1,7 @@
 """Instantiate a Dash app."""
+import base64
+import datetime
+import io
 import numpy as np
 import pandas as pd
 import dash
@@ -24,21 +27,46 @@ def init_dashboard(server):
     # Load DataFrame
     df = create_dataframe()
     # Custom HTML layout
-    dash_app.index_string = html_layout
+    # dash_app.index_string = html_layout
 
     # Create Layout
     dash_app.layout = html.Div(
         children=[
+            html.Img(src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Num%C3%A9ro_1.jpg", alt="n1", style= 'width="50" height="50"'),
+            dcc.Upload(
+                id='upload-data',
+                children=html.Div([
+                    'Drag and Drop or ',
+                    html.A('Select Files')
+                ]),
+                style={
+                    'width': '100%',
+                    'height': '60px',
+                    'lineHeight': '60px',
+                    'borderWidth': '1px',
+                    'borderStyle': 'dashed',
+                    'borderRadius': '5px',
+                    'textAlign': 'center',
+                    'margin': '10px'
+                },
+                # Allow multiple files to be uploaded
+                multiple=False
+            ),
+            dcc.Input(id="hostname", value="test", type="text"),
+            dcc.Input(id="installation", value="your installation", type="text"),
+            html.Br(),
+            html.Img(src="https://upload.wikimedia.org/wikipedia/commons/9/96/Num%C3%A9ro_2.jpg", alt="n1", style= 'width="50" height="50"'),
             html.Div(id='URI-path'),
-            create_data_table(df)
+            create_data_table(df),
+            html.Div(id='output-data-upload'),
         ],
         id='dash-container'
     )
-
+    # init_callbacks()
     @dash_app.callback(
         Output(component_id='URI-path', component_property='children'),
         [Input(component_id='hostname', component_property='value'),
-        Input(component_id="installation", component_property="value")], method=['GET', 'POST']
+        Input(component_id="installation", component_property="value")]
     )
     def update_output_div(username, instalName):
         return 'URI path: {}'.format(str(username)+"/"+str(instalName))
@@ -112,7 +140,7 @@ def create_data_table(df):
         data=df.to_dict('records'),
         sort_action="native",
         sort_mode='native',
-        page_size=100
+        page_size=10
     )
     return table
 

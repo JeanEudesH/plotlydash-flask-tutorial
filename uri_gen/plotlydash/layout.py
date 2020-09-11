@@ -6,15 +6,15 @@ html_layout = '''
         <head>
             {%metas%}
             <title>{%title%}</title>
-            {%favicon%}
+            <link rel="shortcut icon" href='/static/img/favicon.ico' type="image/x-icon" />
             {%css%}
         </head>
         <body class="dash-template">
             <header>
               <div class="nav-wrapper">
                 <a href="/">
-                    <img src="/static/img/logo.png" class="logo" />
-                    <h1>PHIS uri generator</h1>
+                    <img src="/static/img/final.png" class="logo" />
+                    <h1>OpenSILEX URI generator</h1>
                   </a>
                 <nav>
                 </nav>

@@ -16,11 +16,11 @@ from .data import create_dataframe
 from .layout import html_layout
 from ..routes import User, user_collected_URI, session, db, dir_path
 
-def init_dashboard(server):
+def init_dashboard2(server):
     """Create a Plotly Dash dashboard."""
     dash_app = dash.Dash(
         server=server,
-        routes_pathname_prefix='/import_dataset/',
+        routes_pathname_prefix='/existing_ID/',
         external_stylesheets=[
             '/static/dist/css/styles.css',
             'https://fonts.googleapis.com/css?family=Lato'
@@ -36,16 +36,16 @@ def init_dashboard(server):
     # Create Layout
     dash_app.layout = html.Div(
         children=[
-                html.H1("Generate new URI"),
+                html.H1("Enrich existing ID"),
                 input_file(),
                 details(),
                 resource_type(),         
                 additionnal_data(),
                 # create_data_table(df),
                 download_uri(),
-            # html.Div(id='table_output'),
-            html.A(href="uploads/exportURI.csv", download="export_URI", children=["Download"]),
-            html.Div(id='uri_output')
+                # html.Div(id='table_output'),
+                html.A(href="uploads/exportURI.csv", download="export_URI", children=["Download"]),
+                html.Div(id='uri_output')
         ],
         id='dash-container'
     )
@@ -79,15 +79,11 @@ def init_callbacks(dash_app):
     State(component_id='installation', component_property='value'),
     State(component_id='sep', component_property='value'),
     State(component_id='skiprows', component_property='value'),
-    State(component_id='species', component_property='value'),
-    State(component_id='year', component_property='value'),
-    State(component_id='project', component_property='value'),
-    State(component_id='relPlant', component_property='value'),
-    State(component_id='resource_type', component_property='value'),
+    State(component_id='identifier', component_property='value'),
     State('upload-data', 'contents'),
     State('upload-data', 'filename')]
     )
-    def import_dataset(btn_activate, hostname, installation, sep, skiprows, species, year, project, relPlant, resource_type, contents, filename):
+    def existing_id(btn_activate, hostname, installation, sep, skiprows, identifier, contents, filename):
         dataset = parse_data(contents, filename)
         # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
         # try:
@@ -96,28 +92,7 @@ def init_callbacks(dash_app):
         #   flash("Invalid file, did you submit a csv file ?")
         #   return render_template("import.html", username = session['username'], installation = session['installation'], statut = session['logged_in'])  
         # dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
-
-        if resource_type in ['leaf', 'ear']:
-            try:
-                dataset.eval(relPlant)
-            except pd.core.computation.ops.UndefinedVariableError:
-                flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
-
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , project = project, year = year, datasup = relplant)
-        
-        if resource_type == "species":
-            try:
-                dataset.eval(species)
-            except pd.core.computation.ops.UndefinedVariableError:
-                flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, datasup = species)  
-        
-        if resource_type in ['plant', 'pot', 'plot']:
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type, project = project, year = year)
-        
-        if resource_type in ['sensor', 'vector', 'data', 'image', 'event', 'annotation','actuator']:
-            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , year = year)
-        
+        dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = "existing" , datasup = identifier)
         dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI.csv'))
         # send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type +'.csv'), mimetype="text/csv", as_attachment=True)
         return dash_table.DataTable(
@@ -164,15 +139,6 @@ def create_data_table(df):
         page_size=10
     )
     return table
-
-def create_select():
-    ResourceType = ['actuator', 'annotation', 'data', 'ear', 'event', 'image', 'leaf', 'plant', 'plot', 'pot', 'sensor', 'species', 'vector']
-    return dcc.Dropdown(
-        id='resource_type',
-        options= [
-            {"label": i, "value": i} for i in ResourceType
-        ]    
-    )
 
 def input_file():
     return html.Div(className="input_file", children=[
@@ -228,9 +194,6 @@ def resource_type():
                 html.Label("Installation name"), html.Br(),
                 dcc.Input(id="installation", value="your installation", type="text"),
                 html.Div(id='URI-path'),
-                html.Br(),
-                html.Label('Object Type'), html.Br(),
-                create_select(),
                 html.Br()
     ])
 
@@ -240,20 +203,8 @@ def additionnal_data():
                 html.Br(),
                 html.Label("Data to put in the URI"),
                 html.Div(children=[
-                    html.Label("Year"), html.Br(),
-                    dcc.Input(id="year", name="year", type="text", value="2020", debounce=True)
-                ]),
-                html.Div(children=[
-                    html.Label("Project related"), html.Br(),
-                    dcc.Input(id="project", name="project", type="text", value="aProject", debounce=True)
-                ]),
-                html.Div(children=[
-                    html.Label("Related plant column"), html.Br(),
-                    dcc.Input(id="relPlant", name="relPlant", type="text", value="Related_plant", debounce=True)
-                ]),
-                html.Div(children=[
-                    html.Label("Species column"), html.Br(),
-                    dcc.Input(id="species", name="species", type="text", value="Species", debounce=True)
+                        html.Label("Identifier column"), html.Br(),
+                        dcc.Input(id="identifier", name="identifier", type="text", value="ID", debounce=True)
                 ])
             ])
 

@@ -3,12 +3,6 @@
 html_layout = '''
 <!DOCTYPE html>
    <html lang="en">
-      <head>
-      {%metas%}
-      <title>{{ title }}</title>
-      {%favicon%}
-      {%css%}
-      </head>
 
 <body class="dash-template">
           <div class="navbar " >
