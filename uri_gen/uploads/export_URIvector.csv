@@ -1,6 +1,0 @@
-,rdfType,label,brand,serialNumber,inServiceDate,dateOfPurchase,personInCharge,URI
-0,http://www.opensilex.org/vocabulary/oeso#Vector,ensol0001,EnviroSCAN,01BD1DD71500001,2013-01-01,2014-01-01,florence.meunier@inra.fr,test/m3p/2020/ve20000001
-1,http://www.opensilex.org/vocabulary/oeso#Vector,ensol0002,EnviroSCAN,01BD1DD71500001,2013-01-01,2014-01-01,florence.meunier@inra.fr,test/m3p/2020/ve20000002
-2,http://www.opensilex.org/vocabulary/oeso#Vector,ensol0003,EnviroSCAN,01BD1DD71500001,2013-01-01,2014-01-01,florence.meunier@inra.fr,test/m3p/2020/ve20000003
-3,http://www.opensilex.org/vocabulary/oeso#Vector,ensol0004,EnviroSCAN,01BD1DD71500001,2013-01-01,2014-01-01,florence.meunier@inra.fr,test/m3p/2020/ve20000004
-4,http://www.opensilex.org/vocabulary/oeso#Vector,ensol0005,EnviroSCAN,01BD1DD71500001,2013-01-01,2014-01-01,florence.meunier@inra.fr,test/m3p/2020/ve20000005
