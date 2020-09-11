@@ -4,6 +4,7 @@ import datetime
 import io
 import os
 import numpy as np
+import random
 import pandas as pd
 import hashlib
 import dash
