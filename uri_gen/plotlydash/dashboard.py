@@ -36,6 +36,7 @@ def init_dashboard(server):
     # Create Layout
     dash_app.layout = html.Div(
         children=[
+                html.H1("Generate new URI"),
                 input_file(),
                 details(),
                 resource_type(),         
@@ -43,7 +44,7 @@ def init_dashboard(server):
                 # create_data_table(df),
                 download_uri(),
             # html.Div(id='table_output'),
-            html.A(href="uploads/exportURi.csv", download="export_URI", children=["Download"]),
+            html.A(href="uploads/exportURI.csv", download="export_URI", children=["Download"]),
             html.Div(id='uri_output')
         ],
         id='dash-container'

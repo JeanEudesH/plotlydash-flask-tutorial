@@ -16,7 +16,7 @@ from .data import create_dataframe
 from .layout import html_layout
 from ..routes import User, user_collected_URI, session, db, dir_path
 
-def init_dashboard(server):
+def init_dashboard2(server):
     """Create a Plotly Dash dashboard."""
     dash_app = dash.Dash(
         server=server,
@@ -36,15 +36,16 @@ def init_dashboard(server):
     # Create Layout
     dash_app.layout = html.Div(
         children=[
+                html.H1("Enrich existing ID"),
                 input_file(),
                 details(),
                 resource_type(),         
                 additionnal_data(),
                 # create_data_table(df),
                 download_uri(),
-            # html.Div(id='table_output'),
-            html.A(href="uploads/exportURi.csv", download="export_URI", children=["Download"]),
-            html.Div(id='uri_output')
+                # html.Div(id='table_output'),
+                html.A(href="uploads/exportURI.csv", download="export_URI", children=["Download"]),
+                html.Div(id='uri_output')
         ],
         id='dash-container'
     )
@@ -79,11 +80,10 @@ def init_callbacks(dash_app):
     State(component_id='sep', component_property='value'),
     State(component_id='skiprows', component_property='value'),
     State(component_id='identifier', component_property='value'),
-    State(component_id='resource_type', component_property='value'),
     State('upload-data', 'contents'),
     State('upload-data', 'filename')]
     )
-    def existing_id(btn_activate, hostname, installation, sep, skiprows, identifier, resource_type, contents, filename):
+    def existing_id(btn_activate, hostname, installation, sep, skiprows, identifier, contents, filename):
         dataset = parse_data(contents, filename)
         # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
         # try:
@@ -140,15 +140,6 @@ def create_data_table(df):
     )
     return table
 
-def create_select():
-    ResourceType = ['actuator', 'annotation', 'data', 'ear', 'event', 'image', 'leaf', 'plant', 'plot', 'pot', 'sensor', 'species', 'vector']
-    return dcc.Dropdown(
-        id='resource_type',
-        options= [
-            {"label": i, "value": i} for i in ResourceType
-        ]    
-    )
-
 def input_file():
     return html.Div(className="input_file", children=[
             html.Img(src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Num%C3%A9ro_1.jpg", className="steps"),
@@ -203,9 +194,6 @@ def resource_type():
                 html.Label("Installation name"), html.Br(),
                 dcc.Input(id="installation", value="your installation", type="text"),
                 html.Div(id='URI-path'),
-                html.Br(),
-                html.Label('Object Type'), html.Br(),
-                create_select(),
                 html.Br()
     ])
 
@@ -215,7 +203,6 @@ def additionnal_data():
                 html.Br(),
                 html.Label("Data to put in the URI"),
                 html.Div(children=[
-                    html.Div(children=[
                         html.Label("Identifier column"), html.Br(),
                         dcc.Input(id="identifier", name="identifier", type="text", value="ID", debounce=True)
                 ])
