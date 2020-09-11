@@ -3,7 +3,7 @@ __pycache__
 .ropeproject
 .idea
 .webassets-cache
-
+*.zip
 #init db
 init_userdb.py
 
