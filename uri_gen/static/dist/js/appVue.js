@@ -1,5 +1,5 @@
 var app = new Vue({
-  el: '#URI_generator',
+  el: '#dash-container',
   data: {
     URI: 'your uri model',
     key_class: "primary_key",

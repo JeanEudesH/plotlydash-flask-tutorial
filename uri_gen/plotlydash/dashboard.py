@@ -25,7 +25,10 @@ def init_dashboard(server):
         external_stylesheets=[
             '/static/dist/css/styles.css',
             'https://fonts.googleapis.com/css?family=Lato'
-        ]
+        ],
+        external_scripts=[
+            '/static/dist/js/vue.js',
+            '/static/dist/js/appVue.js']
     )
 
     # Load DataFrame
@@ -39,7 +42,7 @@ def init_dashboard(server):
         children=[
                 html.H1("Generate new URI"),
                 input_file(),
-                details(),
+                # details(),
                 resource_type(),         
                 additionnal_data(),
                 # create_data_table(df),
