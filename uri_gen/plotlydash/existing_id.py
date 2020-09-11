@@ -84,22 +84,23 @@ def init_callbacks(dash_app):
     State('upload-data', 'filename')]
     )
     def existing_id(btn_activate, hostname, installation, sep, skiprows, identifier, contents, filename):
-        dataset = parse_data(contents, filename)
-        # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
-        # try:
-        #   dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
-        # except pd.errors.EmptyDataError:
-        #   flash("Invalid file, did you submit a csv file ?")
-        #   return render_template("import.html", username = session['username'], installation = session['installation'], statut = session['logged_in'])  
-        # dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
-        dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = "existing" , datasup = identifier)
-        dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI.csv'))
-        # send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type +'.csv'), mimetype="text/csv", as_attachment=True)
-        return dash_table.DataTable(
-                    data=dataset_URI.to_dict('records'),
-                    columns=[{'name': i, 'id': i} for i in dataset_URI.columns],
-                    page_size=10
-        )
+        if btn_activate>0:
+            dataset = parse_data(contents, filename)
+            # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
+            # try:
+            #   dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
+            # except pd.errors.EmptyDataError:
+            #   flash("Invalid file, did you submit a csv file ?")
+            #   return render_template("import.html", username = session['username'], installation = session['installation'], statut = session['logged_in'])  
+            # dataset = pd.read_csv(os.path.join(dir_path,'uploads','uploaded_file.csv'), sep=SepSetting, skiprows=skipSetting)
+            dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = "existing" , datasup = identifier)
+            dataset_URI.to_csv(os.path.join(dir_path,'uploads','export_URI.csv'))
+            # send_from_directory(directory=dir_path, filename=os.path.join('uploads','export_URI'+resource_type +'.csv'), mimetype="text/csv", as_attachment=True)
+            return dash_table.DataTable(
+                        data=dataset_URI.to_dict('records'),
+                        columns=[{'name': i, 'id': i} for i in dataset_URI.columns],
+                        page_size=10
+            )
     
     # def read_data(list_of_contents, list_of_names):
     #     children = [
