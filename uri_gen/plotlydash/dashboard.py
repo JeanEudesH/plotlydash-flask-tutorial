@@ -108,7 +108,7 @@ def init_callbacks(dash_app):
                 except pd.core.computation.ops.UndefinedVariableError:
                     flash("Invalid column name, or invalid field separator, verify that comma (,) is used to delimit cells, or specify the separatr in the 'Detail' section")
 
-                dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , project = project, year = year, datasup = relplant)
+                dataset_URI = add_URI_col(data=dataset, host = hostname, installation=installation, resource_type = resource_type , project = project, year = year, datasup = relPlant)
             
             if resource_type == "species":
                 try:
