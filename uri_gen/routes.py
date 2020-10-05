@@ -64,7 +64,8 @@ def login():
         session['logged_in'] = True
         return redirect(url_for('home'))
     return render_template("login.html", 
-        statut = session['logged_in'],
+        statut=session['logged_in'],
+        title='Login',
         template='home-template')
 
 @app.route("/new_user", methods=['GET', 'POST'])
@@ -93,7 +94,7 @@ def create_user():
         db.session.commit()
         return redirect(url_for('login'))
     else:
-        return render_template('new_user.html', template='home-template')
+        return render_template('new_user.html', template='home-template', title='create user')
 
 @app.route("/logout")
 def logout():
@@ -104,7 +105,8 @@ def logout():
 def get_started():
     return render_template("get_started.html", 
     username = session['username'],  
-    statut = session['logged_in'],
+    statut=session['logged_in'],
+    title='Get started',
     template='home-template')
 
 
@@ -220,5 +222,6 @@ def your_database():
     return render_template("your_database.html", 
     collections=collections, 
     username = session['username'], 
-    statut = session['logged_in'],
+    statut=session['logged_in'],
+    title='Database',
     template='home-template')
