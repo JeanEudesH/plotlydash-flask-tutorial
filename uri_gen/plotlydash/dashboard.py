@@ -81,8 +81,8 @@ def init_callbacks(dash_app):
     [Input(component_id='generate_URI', component_property='n_clicks')],
     [State(component_id='hostname', component_property='value'),
     State(component_id='installation', component_property='value'),
-    State(component_id='sep', component_property='value'),
-    State(component_id='skiprows', component_property='value'),
+    # State(component_id='sep', component_property='value'),
+    # State(component_id='skiprows', component_property='value'),
     State(component_id='species', component_property='value'),
     State(component_id='year', component_property='value'),
     State(component_id='project', component_property='value'),
@@ -91,7 +91,7 @@ def init_callbacks(dash_app):
     State('upload-data', 'contents'),
     State('upload-data', 'filename')]
     )
-    def import_dataset(btn_activate, hostname, installation, sep, skiprows, species, year, project, relPlant, resource_type, contents, filename):
+    def import_dataset(btn_activate, hostname, installation, species, year, project, relPlant, resource_type, contents, filename):
         if btn_activate>0:
             dataset = parse_data(contents, filename)
             # file.save(os.path.join(dir_path ,'uploads','uploaded_file.csv'))
